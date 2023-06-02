@@ -5,10 +5,10 @@ const getPosts = async () => {
   return rows;
 };
 
-const addPost = async ({ titulo, url, descripcion }) => {
+const addPost = async ({ titulo, img, descripcion }) => {
   const query =
     "INSERT INTO posts (titulo, img, descripcion) VALUES ($1,$2,$3) RETURNING *";
-  const { rows } = await pool.query(query, [titulo, url, descripcion]);
+  const { rows } = await pool.query(query, [titulo, img, descripcion]);
   console.log(rows[0]);
   return rows[0];
 };
@@ -21,8 +21,19 @@ const getPost = async (id) => {
   return rows[0];
 };
 
-export const  postsModel  = {
+const putPost = async (id, { titulo, img, descripcion }) => {
+  const text =
+    "UPDATE posts SET titulo=$1, img=$2, descripcion=$3 WHERE id=$4 RETURNING *";
+  const { rows } = await pool.query(text, [titulo, img, descripcion, id]);
+  if (rows.length === 0) {
+    throw { code: "404" };
+  }
+  return rows[0];
+};
+
+export const postsModel = {
   getPosts,
   addPost,
   getPost,
+  putPost,
 };

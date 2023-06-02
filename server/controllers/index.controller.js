@@ -18,8 +18,8 @@ const getAllPosts = async (req, res) => {
 
 const makePost = async (req, res) => {
   try {
-    const { titulo, url, descripcion } = req.body;
-    const result = await postsModel.addPost({ titulo, url, descripcion });
+    const { titulo, img, descripcion } = req.body;
+    const result = await postsModel.addPost({ titulo, img, descripcion });
     return res.json({
       ok: true,
       message: "Nuevo Post añadido",
@@ -58,8 +58,35 @@ const getOnePost = async (req, res) => {
   }
 };
 
+const modifyPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo, img, descripcion } = req.body;
+    const result = await postsModel.putPost(id, { titulo, img, descripcion });
+    return res.json({
+      ok: true,
+      message: "Post actualizado",
+      result,
+    });
+  } catch (error) {
+    console.log(error);
+    if (error.code === "22P02") {
+      return res
+        .status(400)
+        .json({ ok: false, message: "Formato no válido en el parámetro" });
+    }
+    if (error.code === "404") {
+      return res
+        .status(404)
+        .json({ ok: false, message: "No existe ese registro" });
+    }
+    return res.status(500).json({ ok: false, message: "Error de Servidor" });
+  }
+};
+
 export const indexController = {
   getAllPosts,
   makePost,
   getOnePost,
+  modifyPost,
 };
