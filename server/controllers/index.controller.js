@@ -1,8 +1,8 @@
-import { addPost, getPost, getPosts } from "../db/query.js";
+import { postsModel } from "../model/index.model.js";
 
 const getAllPosts = async (req, res) => {
   try {
-    const result = await getPosts();
+    const result = await postsModel.getPosts();
     return res.json({
       ok: true,
       message: "Lista de Posts",
@@ -19,7 +19,7 @@ const getAllPosts = async (req, res) => {
 const makePost = async (req, res) => {
   try {
     const { titulo, url, descripcion } = req.body;
-    const result = await addPost({ titulo, url, descripcion });
+    const result = await postsModel.addPost({ titulo, url, descripcion });
     return res.json({
       ok: true,
       message: "Nuevo Post añadido",
@@ -36,7 +36,7 @@ const makePost = async (req, res) => {
 const getOnePost = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await getPost(id);
+    const result = await postsModel.getPost(id);
     return res.json({
       ok: true,
       message: "Post encontrado",
