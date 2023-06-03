@@ -1,3 +1,4 @@
+import { handleErrors } from "../db/handleErrors.js";
 import { postsModel } from "../model/index.model.js";
 
 const getAllPosts = async (req, res) => {
@@ -43,18 +44,9 @@ const getOnePost = async (req, res) => {
       result,
     });
   } catch (error) {
-    console.log(error);
-    if (error.code === "22P02") {
-      return res
-        .status(400)
-        .json({ ok: false, message: "Formato no válido en el parámetro" });
-    }
-    if (error.code === "404") {
-      return res
-        .status(404)
-        .json({ ok: false, message: "No existe ese registro" });
-    }
-    return res.status(500).json({ ok: false, message: "Error de Servidor" });
+    console.log(error.code);
+    const { status, message } = handleErrors(error.code);
+    return res.status(status).json({ ok: false, message });
   }
 };
 
@@ -84,9 +76,35 @@ const modifyPost = async (req, res) => {
   }
 };
 
+const deletePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await postsModel.removePost(id);
+    return res.json({
+      ok: true,
+      message: "Post eliminado",
+      result,
+    });
+  } catch (error) {
+    console.log(error);
+    if (error.code === "22P02") {
+      return res
+        .status(400)
+        .json({ ok: false, message: "Formato no válido en el parámetro" });
+    }
+    if (error.code === "404") {
+      return res
+        .status(404)
+        .json({ ok: false, message: "No existe ese registro" });
+    }
+    return res.status(500).json({ ok: false, message: "Error de Servidor" });
+  }
+};
+
 export const indexController = {
   getAllPosts,
   makePost,
   getOnePost,
   modifyPost,
+  deletePost,
 };

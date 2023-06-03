@@ -31,9 +31,19 @@ const putPost = async (id, { titulo, img, descripcion }) => {
   return rows[0];
 };
 
+const removePost= async (id)=>{
+    const text = "DELETE FROM posts WHERE id=$1 RETURNING *";
+    const { rows } = await pool.query(text, [id]);
+    if (rows.length === 0) {
+        throw { code: "404" };
+    }
+    return rows[0];
+}
+
 export const postsModel = {
   getPosts,
   addPost,
   getPost,
   putPost,
+  removePost,
 };

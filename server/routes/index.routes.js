@@ -9,6 +9,8 @@ router.post("/posts", indexController.makePost);
 
 router.get("/posts/:id", indexController.getOnePost);
 
-router.put('/posts/:id',indexController.modifyPost);
+router.put("/posts/:id", indexController.modifyPost);
+
+router.delete("/posts/:id", indexController.deletePost);
 
 export default router;
