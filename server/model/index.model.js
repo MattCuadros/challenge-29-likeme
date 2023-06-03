@@ -21,24 +21,23 @@ const getPost = async (id) => {
   return rows[0];
 };
 
-const putPost = async (id, { titulo, img, descripcion }) => {
-  const text =
-    "UPDATE posts SET titulo=$1, img=$2, descripcion=$3 WHERE id=$4 RETURNING *";
-  const { rows } = await pool.query(text, [titulo, img, descripcion, id]);
+const putPost = async (id) => {
+  const text = "UPDATE posts SET likes=likes+1 WHERE id=$1 RETURNING *";
+  const { rows } = await pool.query(text, [id]);
   if (rows.length === 0) {
     throw { code: "404" };
   }
   return rows[0];
 };
 
-const removePost= async (id)=>{
-    const text = "DELETE FROM posts WHERE id=$1 RETURNING *";
-    const { rows } = await pool.query(text, [id]);
-    if (rows.length === 0) {
-        throw { code: "404" };
-    }
-    return rows[0];
-}
+const removePost = async (id) => {
+  const text = "DELETE FROM posts WHERE id=$1 RETURNING *";
+  const { rows } = await pool.query(text, [id]);
+  if (rows.length === 0) {
+    throw { code: "404" };
+  }
+  return rows[0];
+};
 
 export const postsModel = {
   getPosts,

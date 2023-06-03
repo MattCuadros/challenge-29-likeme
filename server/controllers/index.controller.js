@@ -18,8 +18,13 @@ const getAllPosts = async (req, res) => {
 };
 
 const makePost = async (req, res) => {
+  const { titulo, img, descripcion } = req.body;
+  if (!titulo || !img || !descripcion) {
+    return res
+      .status(400)
+      .json({ ok: false, message: "Faltan datos por ingresar" });
+  }
   try {
-    const { titulo, img, descripcion } = req.body;
     const result = await postsModel.addPost({ titulo, img, descripcion });
     return res.json({
       ok: true,
@@ -27,10 +32,9 @@ const makePost = async (req, res) => {
       result,
     });
   } catch (error) {
-    console.log(error);
-    return res
-      .status(code)
-      .json({ ok: false, code: 404, message: "No se encuentra", result });
+    console.log(error.code);
+    const { status, message } = handleErrors(error.code);
+    return res.status(status).json({ ok: false, message });
   }
 };
 
@@ -53,26 +57,16 @@ const getOnePost = async (req, res) => {
 const modifyPost = async (req, res) => {
   try {
     const { id } = req.params;
-    const { titulo, img, descripcion } = req.body;
-    const result = await postsModel.putPost(id, { titulo, img, descripcion });
+    const result = await postsModel.putPost(id);
     return res.json({
       ok: true,
-      message: "Post actualizado",
+      message: "Like Añadido",
       result,
     });
   } catch (error) {
-    console.log(error);
-    if (error.code === "22P02") {
-      return res
-        .status(400)
-        .json({ ok: false, message: "Formato no válido en el parámetro" });
-    }
-    if (error.code === "404") {
-      return res
-        .status(404)
-        .json({ ok: false, message: "No existe ese registro" });
-    }
-    return res.status(500).json({ ok: false, message: "Error de Servidor" });
+    console.log(error.code);
+    const { status, message } = handleErrors(error.code);
+    return res.status(status).json({ ok: false, message });
   }
 };
 
@@ -87,17 +81,9 @@ const deletePost = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    if (error.code === "22P02") {
-      return res
-        .status(400)
-        .json({ ok: false, message: "Formato no válido en el parámetro" });
-    }
-    if (error.code === "404") {
-      return res
-        .status(404)
-        .json({ ok: false, message: "No existe ese registro" });
-    }
-    return res.status(500).json({ ok: false, message: "Error de Servidor" });
+    console.log(error.code);
+    const { status, message } = handleErrors(error.code);
+    return res.status(status).json({ ok: false, message });
   }
 };
 
