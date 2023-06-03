@@ -1,7 +1,7 @@
 import { pool } from "../db/query.js";
 
 const getPosts = async () => {
-  const { rows } = await pool.query("SELECT * FROM posts");
+  const { rows } = await pool.query("SELECT * FROM posts ORDER BY likes DESC");
   return rows;
 };
 
@@ -22,7 +22,8 @@ const getPost = async (id) => {
 };
 
 const putPost = async (id) => {
-  const text = "UPDATE posts SET likes=likes+1 WHERE id=$1 RETURNING *";
+  const text =
+    "UPDATE posts SET likes=COALESCE(likes,0)+1  WHERE id=$1 RETURNING *";
   const { rows } = await pool.query(text, [id]);
   if (rows.length === 0) {
     throw { code: "404" };
